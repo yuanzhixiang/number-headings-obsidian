@@ -69,6 +69,11 @@ function replaceRangeEconomically(editor: Editor, changes: EditorChange[], range
   }
 }
 
+function findMinimumHeadingLevel(headings: HeadingCache[]): number {
+  if (headings.length === 0) return 1;
+  return Math.min(...headings.map(h => h.level));
+}
+
 export const updateHeadingNumbering = (
   viewInfo: ViewInfo | undefined,
   settings: NumberHeadingsPluginSettings
@@ -79,14 +84,15 @@ export const updateHeadingNumbering = (
   const supportFlags = createSupportFlagsFromSettings(settings.styleLevel1, settings.styleLevelOther)
 
   let previousLevel = 1
-
-  let numberingStack: NumberingToken[] = [startAtOrZerothInStyle(settings.startAt, settings.styleLevel1)]
-
-  if (settings.firstLevel > 1) {
+  if (settings.autoDetectFirstLevel) {
+    previousLevel = findMinimumHeadingLevel(headings)
+  } else if (settings.firstLevel > 1) {
     previousLevel = settings.firstLevel
   } else if (settings.skipTopLevel) {
     previousLevel = 2
   }
+
+  let numberingStack: NumberingToken[] = [startAtOrZerothInStyle(settings.startAt, settings.styleLevel1)]
 
   const changes: EditorChange[] = []
 
