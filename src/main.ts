@@ -127,6 +127,17 @@ class NumberHeadingsPluginSettingTab extends PluginSettingTab {
         }))
 
     new Setting(containerEl)
+      .setName('Auto detect first level')
+      .setDesc('If selected, the plugin will automatically detect the minimum heading level in the document and start numbering from there.')
+      .addToggle(toggle => toggle
+        .setValue(this.plugin.settings.autoDetectFirstLevel)
+        .setTooltip('Auto detect first level')
+        .onChange(async (value) => {
+          this.plugin.settings.autoDetectFirstLevel = value
+          await this.plugin.saveSettings()
+        }))
+
+    new Setting(containerEl)
       .setName('First heading level')
       .setDesc('First heading level to number.')
       .addSlider(slider => slider
